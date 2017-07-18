@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>fe17-express-index</title>
+    </head>
+    <body>
+        <h1>你好 gua</h1>
+        <img src=/images/doge.gif>
+<script>
+var log = console.log.bind(console, '*** ')
+
+var ajax = function(method, path, data, reseponseCallback) {
+    var r = new XMLHttpRequest()
+    // 设置请求方法和请求地址
+    r.open(method, path, true)
+    // 设置发送的数据的格式
+    r.setRequestHeader('Content-Type', 'application/json')
+    // 注册响应函数
+    r.onreadystatechange = function() {
+        if(r.readyState === 4) {
+            // reseponseCallback 服务器返回的信息
+            reseponseCallback(r.response)
+        }
+    }
+    // 处理 data
+    data = JSON.stringify(data, null, 2)
+    // 发送请求
+    r.send(data)
+}
+
+var apiTodoAll = callback => {
+    var method = 'GET'
+    var path = '/todo/all'
+    var data = {}
+    ajax(method, path, data, callback)
+}
+
+var apiTodoAdd = (task, callback) => {
+    var method = 'POST'
+    var path = '/todo/add'
+    var data = {
+        task: task
+    }
+    ajax(method, path, data, callback)
+}
+
+var apiTodoDelete = (id, callback) => {
+    var method = 'GET'
+    var path = '/todo/delete/' + id
+    var data = {}
+    ajax(method, path, data, callback)
+}
+
+var __main = function() {
+    apiTodoAdd('吃瓜 111', function(data){
+        log('add todo 结果', data)
+        apiTodoAdd('吃饭 222', function(data){
+            log('add todo 结果', data)
+            apiTodoAll(function(data){
+                log(data)
+                apiTodoDelete(1, function(data){
+                    log('delete todo 结果', data)
+                    apiTodoAll(function(data){
+                        log(data)
+                    })
+                })
+            })
+        })
+    })
+}
+
+__main()
+</script>
+    </body>
+</html>
